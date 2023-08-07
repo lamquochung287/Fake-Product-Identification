@@ -1,10 +1,13 @@
+import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native';
 import { StyleSheet, Text, View, TextInput, Button, Image } from 'react-native';
-import { Table, TableWrapper, Row, Rows, Col, Cols, Cell } from 'react-native-table-component';
 
 export const LoginScreen = () => {
-
+    const navigation = useNavigation()
+    const handleLogin = () => {
+        navigation.navigate("Home Screen")
+    }
     return (
         <SafeAreaView style={{
             marginVertical: 15,
@@ -17,7 +20,7 @@ export const LoginScreen = () => {
                 </View>
                 <TextInput style={styles.textInput} keyboardType="default" placeholder={"Username"} />
                 <TextInput style={styles.textInput} placeholder={"Password"} secureTextEntry={true} />
-                <Button title="Login" />
+                <Button title="Login" onPress={handleLogin} />
             </View >
         </SafeAreaView >
     )

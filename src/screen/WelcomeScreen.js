@@ -1,8 +1,9 @@
 import React from 'react'
 import { SafeAreaView } from 'react-native';
 import { StyleSheet, Text, View, ImageBackground } from 'react-native';
-import { Header } from 'react-native-elements';
+import { AntDesign } from '@expo/vector-icons';
 import { Button } from "@rneui/themed"
+import TittleApp from '../components/TittleApp';
 
 export const WelcomeScreen = ({ navigation }) => {
     return (
