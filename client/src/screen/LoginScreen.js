@@ -2,7 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native';
 import { StyleSheet, Text, View, TextInput, Button, Image } from 'react-native';
-
+import Color from '../util/Color';
 export const LoginScreen = () => {
     const navigation = useNavigation()
     const handleLogin = () => {
@@ -20,7 +20,7 @@ export const LoginScreen = () => {
                 </View>
                 <TextInput style={styles.textInput} keyboardType="default" placeholder={"Username"} />
                 <TextInput style={styles.textInput} placeholder={"Password"} secureTextEntry={true} />
-                <Button title="Login" onPress={handleLogin} />
+                <Button title="Login" onPress={handleLogin} color={Color.buttonColor} />
             </View >
         </SafeAreaView >
     )

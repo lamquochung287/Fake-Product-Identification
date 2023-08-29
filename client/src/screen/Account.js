@@ -9,16 +9,16 @@ const Account = ({ navigation }) => {
         <View style={styles.accountContainer}>
             <Image style={styles.image} source={require("../../assets/user.png")}></Image>
             <Text style={styles.header}>username</Text>
-            <TouchableOpacity style={styles.buttonContainer}>
+            {/* <TouchableOpacity style={styles.buttonContainer} onPress={() => navigation.navigate("List Manufacturer Screen")}>
                 <Entypo name="list" size={24} color="gray" />
                 <Text style={styles.buttonText}>View your manufacturer</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.buttonContainer}>
+            <TouchableOpacity style={styles.buttonContainer} onPress={() => navigation.navigate("History Screen")}>
                 <FontAwesome name="history" size={24} color="gray" />
                 <Text style={styles.buttonText}>View your verify history</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
             <View style={{ marginTop: 30, width: 100 }}>
-                <Button title="Log out" color={Color.buttonColor} />
+                <Button title="Log out" color={Color.buttonColor} onPress={() => { navigation.navigate("Welcome Screen") }} />
             </View>
         </View>
     )
