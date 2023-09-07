@@ -2,6 +2,8 @@ import { client } from "../database/connect.js"
 import bcrypt from "bcrypt"
 import { StatusCodes } from "http-status-codes"
 import jwt from "jsonwebtoken"
+import dotenv from "dotenv"
+dotenv.config()
 const hashPassword = async (password) => {
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -25,7 +27,7 @@ const register = async (req, res) => {
     const { username, password, email, role } = req.body
     const hashedPassword = await hashPassword(password)
     const addUsersQuery = `insert into users (username,password,email,role) values ($1,$2,$3,$4);`
-    const values = [username, hashedPassword, email, role]
+    const values = [username, hashedPassword, email, role.trim()]
     try {
         await client.query(addUsersQuery, values);
         return res.status(StatusCodes.CREATED).json({ msg: "Create new account success" });
@@ -39,7 +41,7 @@ const register = async (req, res) => {
 
 const signToken = (userId, username, email, role) => {
     const user = { userId: userId, username: username, email: email, role: role }
-    const token = jwt.sign({ user: user }, "privatekey", { expiresIn: 60 * 60 })
+    const token = jwt.sign({ user: user }, process.env.privateKey, { expiresIn: 60 * 60 })
     return token
 }
 
