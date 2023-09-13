@@ -10,8 +10,8 @@ const checkRoleUser = (req, res, next) => {
     const tokenDecode = jwt.verify(token, process.env.privateKey)
     const user = tokenDecode.user
     if (user.role.trim() === 'manufacturer')
-        next()
-    return;
+        return next()
+    return res.json({ msg: "You don't have permission to access this page" });
 
 }
 

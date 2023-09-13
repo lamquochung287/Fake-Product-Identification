@@ -9,6 +9,8 @@ import dotenv from "dotenv"
 import checkRoleUser from "./middleware/checkRoleUser.js"
 import checkLogin from "./middleware/checkLogin.js"
 import cookieParser from "cookie-parser"
+import fileUpload from "express-fileupload"
+import userRoute from "./routes/userRoute.js"
 dotenv.config()
 
 
@@ -21,6 +23,7 @@ app.use(rateLimit({
     windowMs: 5 * 60 * 1000,
     max: 100,
 }))
+app.use(fileUpload())
 app.use(session({
     secret: 'secretKey',
     saveUninitialized: true,
@@ -29,6 +32,8 @@ app.use(session({
 
 app.use("/auth", authRoute)
 app.use("/manufacturer", checkLogin, checkRoleUser, manufacturerRoute)
+app.use("/user", userRoute)
+
 const startServer = app.listen(5000, () => {
     console.log("Sever run port 5000")
 })

@@ -51,11 +51,34 @@ const getProductByUser = async (req, res) => {
         return res.status(StatusCodes.BAD_REQUEST).json({ msg: "Get product not successful " })
     }
 }
-const editProduct = (req, res) => {
-    return res.json({ msg: "edit product" })
+const editProduct = async (req, res) => {
+    const { productName, price, productPIN, productImage } = req.body
+    const productID = req.params.productId
+    const token = req.session.token
+    const tokenDecode = jwt.verify(token, process.env.privateKey)
+    const user = tokenDecode.user
+    const values = [productName, price, productPIN, productImage, productID]
+    const updateProductQuery = `update product set productname = $1, price = $2, productpin = $3, productimage = $4 where product_id = $5`
+    try {
+        await client.query(updateProductQuery, values)
+        return res.status(StatusCodes.CREATED).json({ msg: `update product ${productID} successfully` })
+    } catch (error) {
+        if (error.code === "23505")
+            return res.status(StatusCodes.BAD_REQUEST).json({ msg: "PIN product is exists, Please enter another PIN product" });
+        console.log(error)
+        return res.status(StatusCodes.BAD_REQUEST).json({ msg: `update product ${productID} not successfully` })
+    }
 }
-const deleteProduct = (req, res) => {
-    return res.json({ msg: "delete product" })
+const deleteProduct = async (req, res) => {
+    const productID = req.params.productId
+    const values = [productID]
+    const deleteProductQuery = `delete from product where product_id = $1`
+    try {
+        await client.query(deleteProductQuery, values)
+        return res.status(StatusCodes.CREATED).json({ msg: `delete product ${productID} successfully` })
+    } catch (error) {
+        return res.status(StatusCodes.BAD_REQUEST).json({ msg: `delete product ${productID} not successfully`, error: error })
+    }
 }
 
 
