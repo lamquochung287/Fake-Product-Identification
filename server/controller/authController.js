@@ -2,6 +2,7 @@ import { client } from "../database/connect.js"
 import bcrypt from "bcrypt"
 import { StatusCodes } from "http-status-codes"
 import jwt from "jsonwebtoken"
+import validator from 'validator';
 import dotenv from "dotenv"
 dotenv.config()
 const hashPassword = async (password) => {
@@ -24,7 +25,13 @@ const comparePassword = async (passwordInput, password) => {
 }
 
 const register = async (req, res) => {
-    const { username, password, email, role } = req.body
+    const { username, password, passwordConfirm, email, role } = req.body
+    if (password !== passwordConfirm) {
+        return res.status(StatusCodes.BAD_REQUEST).json({ msg: "Password confirm not same with password" })
+    }
+    if (!validator.isEmail(email)) {
+        return res.status(StatusCodes.BAD_REQUEST).json({ msg: "This email not valid" })
+    }
     const hashedPassword = await hashPassword(password)
     const addUsersQuery = `insert into users (username,password,email,role) values ($1,$2,$3,$4);`
     const values = [username, hashedPassword, email, role.trim()]
@@ -65,4 +72,9 @@ const login = async (req, res) => {
 
 }
 
-export { register, login }
+const logout = (req, res) => {
+    delete req.session.token
+    return res.status(StatusCodes.OK).json({ msg: "Log out success" })
+}
+
+export { register, login, logout }

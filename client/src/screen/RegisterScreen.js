@@ -1,9 +1,27 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { SafeAreaView } from 'react-native';
 import { StyleSheet, Text, View, TextInput, Button, Image } from 'react-native';
-
+import { Picker } from '@react-native-picker/picker';
+import { useSelector, useDispatch } from 'react-redux';
+import { registerAction } from '../store/register/register';
 
 export const RegisterScreen = () => {
+    const [selectedValue, setSelectedValue] = useState("manufacturer")
+    const { inputSend } = useSelector((state) => state.register)
+    const dispatch = useDispatch()
+    const [input, setInputValue] = useState({
+        username: "",
+        email: "",
+        password: "",
+        passwordConfirm: "",
+        role: selectedValue,
+    })
+    const handleRegister = () => {
+        dispatch(registerAction(input))
+    }
+    const handleInput = (name, value) => {
+        setInputValue({ ...input, [name]: value })
+    }
     return (
         <SafeAreaView style={{
             marginVertical: 15,
@@ -14,11 +32,15 @@ export const RegisterScreen = () => {
                     <Text style={styles.textRegisterForm}>Register</Text>
                     <Image source={require('../../assets/qrScanIcon.jpg')} style={{ width: 40, height: 40 }} />
                 </View>
-                <TextInput placeholder={"Username"} style={styles.textInput} inlineImageLeft={require("../../assets/user.png")} />
-                <TextInput placeholder={"Email"} style={styles.textInput} keyboardType="email-address" />
-                <TextInput placeholder={"Password"} style={styles.textInput} secureTextEntry={true} />
-                <TextInput placeholder={"Password Confirm"} style={styles.textInput} secureTextEntry={true} />
-                <Button title="Register" />
+                <TextInput placeholder={"Username"} style={styles.textInput} inlineImageLeft={require("../../assets/user.png")} onChangeText={(text) => handleInput("username", text)} />
+                <TextInput placeholder={"Email"} style={styles.textInput} keyboardType="email-address" onChangeText={(text) => handleInput("email", text)} />
+                <TextInput placeholder={"Password"} style={styles.textInput} secureTextEntry={true} onChangeText={(text) => handleInput("password", text)} />
+                <TextInput placeholder={"Password Confirm"} style={styles.textInput} secureTextEntry={true} onChangeText={(text) => handleInput("passwordConfirm", text)} />
+                <Picker selectedValue={selectedValue} onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)} >
+                    <Picker.Item label="Manufacturer" value="manufacturer" defaultValue={selectedValue} />
+                    <Picker.Item label="User" value="user" />
+                </Picker>
+                <Button title="Register" onPress={handleRegister} />
             </View>
         </SafeAreaView>
     )

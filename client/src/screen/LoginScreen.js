@@ -1,13 +1,28 @@
 import { useNavigation } from '@react-navigation/native';
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { SafeAreaView } from 'react-native';
 import { StyleSheet, Text, View, TextInput, Button, Image } from 'react-native';
 import Color from '../util/Color';
+import { useSelector, useDispatch } from 'react-redux';
+import { loginAction } from '../store/login/loginSlice';
+
 export const LoginScreen = () => {
     const navigation = useNavigation()
+    const { isLogin } = useSelector((state) => state.login)
+    const [username, setUsername] = useState('')
+    const [password, setPassword] = useState('')
+    const dispatch = useDispatch()
     const handleLogin = () => {
-        navigation.navigate("Home Screen")
+        const input = { username: username, password: password }
+        dispatch(loginAction(input))
+        // navigation.navigate("Home Screen")
     }
+
+    useEffect(() => {
+        if (isLogin === true) {
+            navigation.navigate("Home Screen")
+        }
+    }, [isLogin])
     return (
         <SafeAreaView style={{
             marginVertical: 15,
@@ -18,8 +33,8 @@ export const LoginScreen = () => {
                     <Text style={styles.textLoginForm}>Login</Text>
                     <Image source={require('../../assets/qrScanIcon.jpg')} style={{ width: 40, height: 40 }} />
                 </View>
-                <TextInput style={styles.textInput} keyboardType="default" placeholder={"Username"} />
-                <TextInput style={styles.textInput} placeholder={"Password"} secureTextEntry={true} />
+                <TextInput style={styles.textInput} keyboardType="default" placeholder={"Username"} value={username} onChangeText={text => setUsername(text)} />
+                <TextInput style={styles.textInput} placeholder={"Password"} secureTextEntry={true} value={password} onChangeText={text => setPassword(text)} />
                 <Button title="Login" onPress={handleLogin} color={Color.buttonColor} />
             </View >
         </SafeAreaView >

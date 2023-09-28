@@ -4,8 +4,8 @@ import AppNavigation from './AppNavigation';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
-
-
+import { Provider } from 'react-redux';
+import { store } from "./src/store/store"
 const Stack = createStackNavigator();
 
 export default function App() {
@@ -15,9 +15,11 @@ export default function App() {
     //   <StatusBar style="auto" />
     // </View>
     <SafeAreaProvider>
-      <NavigationContainer>
-        <AppNavigation />
-      </NavigationContainer>
+      <Provider store={store}>
+        <NavigationContainer>
+          <AppNavigation />
+        </NavigationContainer>
+      </Provider>
     </SafeAreaProvider>
   );
 }

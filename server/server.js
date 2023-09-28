@@ -17,7 +17,11 @@ dotenv.config()
 const app = express()
 app.use(express.json());
 app.use(express.urlencoded());
-app.use(cors())
+app.use(cors({
+    "origin": "*",
+    "methods": "GET,HEAD,PUT,PATCH,POST,DELETE"
+}))
+
 app.use(cookieParser());
 app.use(rateLimit({
     windowMs: 5 * 60 * 1000,
@@ -32,7 +36,7 @@ app.use(session({
 
 app.use("/auth", authRoute)
 app.use("/manufacturer", checkLogin, checkRoleUser, manufacturerRoute)
-app.use("/user", userRoute)
+app.use("/user", checkLogin, userRoute)
 
 const startServer = app.listen(5000, () => {
     console.log("Sever run port 5000")
