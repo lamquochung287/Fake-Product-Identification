@@ -4,10 +4,14 @@ import { StyleSheet, Text, View, TextInput, Button, Image } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { useSelector, useDispatch } from 'react-redux';
 import { registerAction } from '../store/register/register';
+import Toast from 'react-native-toast-message';
+import { useNavigation } from '@react-navigation/native';
+
 
 export const RegisterScreen = () => {
+    const navigation = useNavigation()
     const [selectedValue, setSelectedValue] = useState("manufacturer")
-    const { inputSend } = useSelector((state) => state.register)
+    const { isSuccess, isError, messageError } = useSelector((state) => state.register)
     const dispatch = useDispatch()
     const [input, setInputValue] = useState({
         username: "",
@@ -18,7 +22,25 @@ export const RegisterScreen = () => {
     })
     const handleRegister = () => {
         dispatch(registerAction(input))
+
     }
+    useEffect(() => {
+        if (isSuccess === true) {
+            Toast.show({
+                type: 'success',
+                text1: 'Register Success'
+            });
+            navigation.navigate("Login Screen")
+        }
+        if (isError) {
+            Toast.show({
+                type: 'error',
+                text1: messageError
+            });
+        }
+
+    }, [isSuccess, isError])
+
     const handleInput = (name, value) => {
         setInputValue({ ...input, [name]: value })
     }

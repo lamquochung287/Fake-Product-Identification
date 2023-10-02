@@ -2,9 +2,15 @@ import React, { useState } from 'react';
 import { Text, StyleSheet, View, Image, Button, ScrollView, Alert } from "react-native";
 import Color from "../util/Color"
 import { useNavigation } from '@react-navigation/native';
-import { launchCameraAsync, useCameraPermissions, PermissionStatus } from 'expo-image-picker';
+import { launchCameraAsync, useCameraPermissions, PermissionStatus, ImagePicker, MediaTypeOptions } from 'expo-image-picker';
+import Toast from 'react-native-toast-message';
+import { useDispatch, useSelector } from 'react-redux';
+import { verifyProduct } from '../store/userSlice/userSlice';
+
 
 const DescriptionScreen = () => {
+    const dispatch = useDispatch()
+    const { isError, isSuccess, messageError } = useSelector((state) => state.user)
     const navigation = useNavigation()
     const [imageSrc, setImage] = useState();
     const handleVerifyButton = () => {
@@ -32,11 +38,13 @@ const DescriptionScreen = () => {
             return;
         }
         const image = await launchCameraAsync({
+            mediaTypes: MediaTypeOptions.Images,
             allowsEditing: true,
             aspect: [16, 9],
             quality: 0.5,
         })
         setImage(image.uri)
+        dispatch(verifyProduct(image.uri))
     }
 
     return (

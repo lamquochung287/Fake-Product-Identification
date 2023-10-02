@@ -6,7 +6,9 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import { Provider } from 'react-redux';
 import { store } from "./src/store/store"
+import { useEffect } from 'react';
 const Stack = createStackNavigator();
+import Toast from 'react-native-toast-message';
 
 export default function App() {
   return (
@@ -19,6 +21,7 @@ export default function App() {
         <NavigationContainer>
           <AppNavigation />
         </NavigationContainer>
+        <Toast />
       </Provider>
     </SafeAreaProvider>
   );

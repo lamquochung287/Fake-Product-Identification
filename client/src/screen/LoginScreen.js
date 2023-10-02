@@ -1,14 +1,16 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useState, useEffect } from 'react'
-import { SafeAreaView } from 'react-native';
+import { SafeAreaView, Alert } from 'react-native';
 import { StyleSheet, Text, View, TextInput, Button, Image } from 'react-native';
 import Color from '../util/Color';
 import { useSelector, useDispatch } from 'react-redux';
 import { loginAction } from '../store/login/loginSlice';
+import Toast from 'react-native-toast-message';
+
 
 export const LoginScreen = () => {
     const navigation = useNavigation()
-    const { isLogin } = useSelector((state) => state.login)
+    const { isLogin, messageError, isError } = useSelector((state) => state.login)
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const dispatch = useDispatch()
@@ -20,14 +22,26 @@ export const LoginScreen = () => {
 
     useEffect(() => {
         if (isLogin === true) {
+            Toast.show({
+                type: 'success',
+                text1: 'Login Success'
+            });
             navigation.navigate("Home Screen")
         }
-    }, [isLogin])
+        if (isError) {
+            Toast.show({
+                type: 'error',
+                text1: messageError
+            });
+        }
+
+    }, [isLogin, isError])
     return (
         <SafeAreaView style={{
             marginVertical: 15,
             marginHorizontal: 5, height: '100%', alignItems: 'center', justifyContent: 'center'
         }}>
+
             <View style={styles.loginFormContainer}>
                 <View style={{ flexDirection: "row", gap: 5, alignItems: 'center' }}>
                     <Text style={styles.textLoginForm}>Login</Text>

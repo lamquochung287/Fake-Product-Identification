@@ -13,6 +13,8 @@ const initialState = {
 export const loginAction = createAsyncThunk("/auth/login", async (input, thunkAPI) => {
     try {
         const resp = await axios.post("http://localhost:5000/auth/login", { username: input.username, password: input.password })
+        const token = resp.data.token
+        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         return resp.data
     } catch (error) {
         return thunkAPI.rejectWithValue(error.response.data)

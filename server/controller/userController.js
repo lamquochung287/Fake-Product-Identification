@@ -3,22 +3,25 @@ import Jimp from 'jimp';
 import { StatusCodes } from "http-status-codes"
 import jwt from "jsonwebtoken"
 import { client } from "../database/connect.js"
+import { PNG } from "pngjs"
 
 const readDecodeQR = async (file) => {
     try {
         // Read the image using Jimp
         const imageUpload = await Jimp.read(file);
-
+        console.log("here")
         // Create a QR code reader instance
         const qr = new Qrcode();
         const decodeQR = await new Promise((resolve, reject) => {
             qr.callback = (err, result) => {
                 if (err) {
+                    console.log("error here")
                     reject(err);
                 } else {
                     resolve(result);
                 }
             };
+
             qr.decode(imageUpload.bitmap);
         });
 
@@ -74,8 +77,14 @@ const detailHistory = async (req, res) => {
 }
 
 const verifyProduct = async (req, res) => {
-    const imageUpload = req.files.file.data
-    const qrDecoded = await readDecodeQR(imageUpload)
+    const imageUpload = req.body.file || req.files.file.data
+    const png = new PNG({
+        width: 300,
+        height: 300,
+        filterType: -1,
+    })
+    png.data = Buffer.from(imageUpload)
+    const qrDecoded = await readDecodeQR(png.data)
     if (qrDecoded === null)
         return res.status(StatusCodes.BAD_REQUEST).json({ msg: "QR code could be decoded please try again" })
     const querySelectProductPIN = `Select * from product where productpin = $1`
@@ -91,7 +100,7 @@ const verifyProduct = async (req, res) => {
             return res.status(StatusCodes.OK).json({ msg: `Verify product success`, resultVerifyProduct: resultVerifyProduct })
         }
         resultVerifyProduct = true
-        saveHistory(qrDecoded.toString().trim(), user, resultVerifyProduct)
+        //saveHistory(qrDecoded.toString().trim(), user, resultVerifyProduct)
         return res.status(StatusCodes.OK).json({ msg: `Verify product success`, resultVerifyProduct: resultVerifyProduct })
 
     } catch (error) {

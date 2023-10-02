@@ -1,11 +1,14 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
+
 const initialState = {
     isLoading: false,
     isError: false,
     messageError: "",
-    inputSend: null
+    inputSend: null,
+    isSuccess: false,
+    messageSuccess: "",
 }
 
 export const registerAction = createAsyncThunk("/auth/register", async (input, thunkAPI) => {
@@ -33,9 +36,11 @@ const registerSlice = createSlice({
         [registerAction.pending]: (state) => {
             state.isLoading = true;
             state.isError = false;
+            state.isSuccess = false;
         },
         [registerAction.fulfilled]: (state, { payload }) => {
-
+            state.isSuccess = true;
+            state.messageSuccess = payload.msg
         },
         [registerAction.rejected]: (state, { payload }) => {
             state.isLoading = false
