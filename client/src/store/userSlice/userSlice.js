@@ -5,7 +5,10 @@ const initialState = {
     isLoading: false,
     isError: false,
     isSuccess: false,
+    resultVerifyProduct: null,
     messageError: "",
+    isFetchHistory: true,
+    listHistory: [],
 }
 
 const readerImage = async (input) => {
@@ -31,11 +34,20 @@ const readerImage = async (input) => {
     }
 }
 
+export const getAllHistory = createAsyncThunk("/user/getAllHistory", async (thunkAPI) => {
+    try {
+        const resp = await axios.get('http://localhost:5000/user/getAllHistory')
+        return resp.data
+    } catch (error) {
+        console.log(error.response.data)
+        return thunkAPI.rejectWithValue(error.response.data)
+
+    }
+})
 
 export const verifyProduct = createAsyncThunk("/user/verifyProduct", async (input, thunkAPI) => {
     try {
         const image = await readerImage(input)
-        console.log(image)
         const formData = new FormData();
         // formData.append('file', {
         //     uri: image,
@@ -49,7 +61,6 @@ export const verifyProduct = createAsyncThunk("/user/verifyProduct", async (inpu
                 'Content-Type': 'multipart/form-data',
             },
         });
-        console.log(resp.data)
         return resp.data
     } catch (error) {
         console.log(error.response.data)
@@ -61,7 +72,16 @@ const userSlice = createSlice({
     name: "userSLice",
     initialState: initialState,
     reducers: {
+        resetStateUser: (state) => {
+            state.isLoading = false,
+                state.isError = false,
+                state.isSuccess = false,
+                state.resultVerifyProduct = null,
+                state.messageError = "",
+                state.isFetchHistory = true,
+                state.listHistory = []
 
+        }
     },
     extraReducers: {
         [verifyProduct.pending]: (state) => {
@@ -70,17 +90,40 @@ const userSlice = createSlice({
             state.isSuccess = false;
         },
         [verifyProduct.fulfilled]: (state, { payload }) => {
+            state.isFetchHistory = true;
             state.isError = false
             state.isLoading = false
             state.isSuccess = true
+            state.resultVerifyProduct = payload.resultVerifyProduct
         },
         [verifyProduct.rejected]: (state, { payload }) => {
             state.isLoading = false
             state.isError = true;
             state.isSuccess = false
             // state.messageError = payload.msg
-        }
+        },
+        [getAllHistory.pending]: (state) => {
+            state.isFetchHistory = true
+            state.isLoading = true;
+            state.isError = false;
+            state.isSuccess = false;
+        },
+        [getAllHistory.fulfilled]: (state, { payload }) => {
+            state.isFetchHistory = false
+            state.isError = false
+            state.isLoading = false
+            state.isSuccess = true
+            state.listHistory = payload.histories
+        },
+        [getAllHistory.rejected]: (state, { payload }) => {
+            state.isFetchHistory = false
+            state.isLoading = false
+            state.isError = true;
+            state.isSuccess = false
+            state.listHistory = []
+            // state.messageError = payload.msg
+        },
     }
 })
-
+export const { resetStateUser } = userSlice.actions
 export default userSlice.reducer;

@@ -1,6 +1,9 @@
 import { View, Text, StyleSheet, FlatList, ScrollView } from "react-native"
 import { SearchBar } from 'react-native-elements';
 import CardItem from "../components/CardItem";
+import { useDispatch, useSelector } from 'react-redux';
+import { useEffect, useLayoutEffect, useState } from "react";
+import { loadProductAction } from "../store/manufactuer/manufacturerSlice";
 
 const data = [
     {
@@ -61,6 +64,23 @@ const renderItem = ({ item }) => {
 }
 
 const ListManufacturerScreen = () => {
+    const dispatch = useDispatch()
+    const { listProduct, isFetching } = useSelector((state) => state.manufacturer)
+    const [listData, setListData] = useState([])
+
+    useEffect(() => {
+        const fetchProduct = async () => {
+            if (isFetching === true) {
+                try {
+                    await dispatch(loadProductAction())
+                } catch (error) {
+                    console.error(error)
+                }
+            }
+        }
+        fetchProduct()
+        setListData(listProduct)
+    }, [isFetching])
     return (
         <View style={styles.screenContainer}>
             <View>
@@ -68,7 +88,7 @@ const ListManufacturerScreen = () => {
                     containerStyle={{ padding: 0 }}
                 />
             </View>
-            <FlatList data={data} renderItem={renderItem} keyExtractor={item => item.id}
+            <FlatList data={listProduct} renderItem={renderItem} keyExtractor={item => item.product_id}
                 showsVerticalScrollIndicator={false}
             />
             {/* <View style={styles.list}>

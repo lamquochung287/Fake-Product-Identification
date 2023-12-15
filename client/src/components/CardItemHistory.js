@@ -2,27 +2,23 @@ import { View, Text, StyleSheet, Image, Pressable } from "react-native"
 import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
-const CardItem = ({ product, resultVerify }) => {
+const CardItemHistory = ({ product, resultVerify }) => {
     const navigation = useNavigation()
-    const pressHandle = () => {
-        navigation.navigate("Detail Screen", { product: product, resultVerify: resultVerify });
-    }
+    // const pressHandle = () => {
+    //     navigation.navigate("Detail Screen", { product: product, resultVerify: resultVerify });
+    // }
     return (
         <View style={styles.cardItemContainer}>
             <Pressable android_ripple={{
                 color: "#84eaf4"
             }} style={({ pressed }) => [{ opacity: pressed ? 0.2 : 1 }]}
-                onPress={pressHandle}
+            // onPress={pressHandle}
             >
                 <View style={styles.flexRow}>
-                    <Image source={{ uri: product.productimage }} style={styles.image} resizeMode="contain" />
+                    <Image source={require("../../assets/qrScanIcon.jpg")} style={styles.image} resizeMode="contain" />
                     <View style={{ flex: 2, justifyContent: "center" }}>
 
-                        <Text style={styles.productID}>{product.product_id}</Text>
-                        <Text style={styles.introductionProduct}>{product.productname}</Text>
-                        <Text style={styles.text}>{product.productpin}</Text>
-                        {/* <Text style={styles.text}>{product.brand}</Text> */}
-                        <Text style={styles.text}>{product.price}</Text>
+                        <Text style={styles.productID}>Product PIN: {product}</Text>
                     </View>
                     {resultVerify ?
                         <View View style={styles.justifyRightBottom}>
@@ -87,4 +83,4 @@ const styles = StyleSheet.create({
     },
 
 })
-export default CardItem
+export default CardItemHistory

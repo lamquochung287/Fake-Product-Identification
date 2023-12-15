@@ -1,11 +1,12 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import { resetStateUser } from "../userSlice/userSlice";
 
 const initialState = {
     isLoading: false,
     isError: false,
     messageError: "",
-    user: null,
+    userRole: null,
     isLogin: false,
     token: null,
 }
@@ -21,12 +22,23 @@ export const loginAction = createAsyncThunk("/auth/login", async (input, thunkAP
     }
 })
 
+export const logoutAction = createAsyncThunk("/auth/logout", async (thunkAPI) => {
+    try {
+        const resp = await axios.post("http://localhost:5000/auth/logout")
+        delete axios.defaults.headers.common['Authorization'];
+        return resp.data
+    } catch (error) {
+        return thunkAPI.rejectWithValue(error.response.data)
+    }
+})
+
+
 const loginSlice = createSlice({
     name: 'loginSlice',
     initialState: initialState,
     reducers: {
-        login: (state) => {
-
+        logoutFunction: (state, action) => {
+            action.dispatch(resetStateUser());
         }
     },
     extraReducers: {
@@ -37,12 +49,27 @@ const loginSlice = createSlice({
         [loginAction.fulfilled]: (state, { payload }) => {
             state.isError = false
             state.isLogin = true
-            const user = payload.user;
-            state.user = user
+            const userRole = payload.userRole;
+            state.userRole = userRole.trim()
             state.isLoading = false
-            console.log(payload)
         },
         [loginAction.rejected]: (state, { payload }) => {
+            state.isLoading = false
+            state.isError = true;
+            state.messageError = payload.msg
+        },
+        [logoutAction.pending]: (state) => {
+            state.isLoading = true;
+            state.isError = false;
+        },
+        [logoutAction.fulfilled]: (state, { payload }) => {
+            state.isError = false
+            state.isLogin = false
+            state.userRole = null
+            state.token = null
+            state.isLoading = false
+        },
+        [logoutAction.rejected]: (state, { payload }) => {
             state.isLoading = false
             state.isError = true;
             state.messageError = payload.msg
@@ -50,4 +77,6 @@ const loginSlice = createSlice({
     }
 })
 
+
+export const { logoutFunction } = loginSlice.actions
 export default loginSlice.reducer;

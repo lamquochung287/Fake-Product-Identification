@@ -31,7 +31,10 @@ export const registerAction = createAsyncThunk("/auth/register", async (input, t
 const registerSlice = createSlice({
     name: "registerSlice",
     initialState: initialState,
-    reducers: {},
+    reducers: {
+
+
+    },
     extraReducers: {
         [registerAction.pending]: (state) => {
             state.isLoading = true;
@@ -49,5 +52,6 @@ const registerSlice = createSlice({
         }
     }
 })
+
 
 export default registerSlice.reducer

@@ -64,7 +64,7 @@ const login = async (req, res) => {
             return res.status(StatusCodes.BAD_REQUEST).json({ msg: "Password not correct" })
         const token = signToken(user[0].user_id, user[0].username, user[0].email, user[0].role)
         req.session.token = token
-        return res.status(StatusCodes.OK).json({ msg: "Login success", token: req.session.token })
+        return res.status(StatusCodes.OK).json({ msg: "Login success", userRole: user[0].role, token: req.session.token })
     } catch (error) {
         console.log(error)
         return res.status(StatusCodes.BAD_REQUEST).json({ msg: "Error login" })

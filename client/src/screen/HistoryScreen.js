@@ -1,6 +1,12 @@
 import { View, Text, StyleSheet, SectionList } from "react-native"
 import { SearchBar } from 'react-native-elements';
+import CardItemHistory from "../components/CardItemHistory";
 import CardItem from "../components/CardItem";
+
+import { useDispatch, useSelector } from 'react-redux';
+import { getAllHistory, loadHistory } from '../store/userSlice/userSlice';
+import { useEffect, useLayoutEffect, useState } from "react";
+import { format, parseISO } from 'date-fns';
 
 const DATA = [
     {
@@ -31,30 +37,82 @@ const DATA = [
 
 const newData = [
     {
-        date: "Monday 7-8-2023",
+        date: "7-8-2023",
         data: [<CardItem product={DATA[0]} resultVerify={"false"} />, <CardItem product={DATA[1]} resultVerify={"true"} />]
     },
     {
-        date: "Tuesday 8-8-2023",
+        date: "8-8-2023",
         data: [<CardItem product={DATA[2]} resultVerify={"true"} />]
     }
 ]
 
-const renderItem = ({ item }) => (
-    <View>{item}</View>
-)
 
 const renderHeader = ({ section }) => (
     <Text style={style.header}>{section.date}</Text>
 )
 
+const renderItem = ({ item }) => (
+    <View>{item}</View>
+)
+
 const HistoryScreen = () => {
+    const dispatch = useDispatch()
+    const { listHistory, isFetchHistory } = useSelector((state) => state.user)
+    const [listData, setListData] = useState([])
+    const renderNewData = () => {
+        const groupedHistory = listHistory.reduce((acc, historyItem) => {
+            let { productpin, result_verify, date_verify } = historyItem;
+            date_verify = parseISO(date_verify)
+            const formattedDate = format(date_verify, "yyyy-MM-dd");
+            date_verify = formattedDate
+            // Check if the date is already a key in the groupedHistory object
+            if (acc[date_verify]) {
+                acc[date_verify].data.push(
+                    <CardItemHistory
+                        key={`${productpin}-${result_verify}`}
+                        product={productpin}
+                        resultVerify={result_verify}
+                    />
+                );
+            } else {
+
+                // If date is not a key, create a new entry
+                acc[date_verify] = {
+                    date: date_verify,
+                    data: [
+                        <CardItemHistory
+                            key={`${productpin}-${result_verify}`}
+                            product={productpin}
+                            resultVerify={result_verify}
+                        />
+                    ],
+                };
+            }
+
+            return acc;
+        }, {});
+        const groupedHistoryArray = Object.values(groupedHistory);
+        return groupedHistoryArray
+    }
+    useEffect(() => {
+        const fetchHistory = async () => {
+            if (isFetchHistory === true) {
+                try {
+                    await dispatch(getAllHistory())
+                } catch (error) {
+                    console.error(error)
+                }
+            }
+        }
+        fetchHistory()
+        setListData(renderNewData())
+    }, [isFetchHistory])
 
     return (
         <View style={style.container}>
             <SectionList
                 keyExtractor={(item, index) => index.toString()}
-                sections={newData}
+                sections={listData}
                 renderItem={renderItem}
                 renderSectionHeader={renderHeader}
             ></SectionList>

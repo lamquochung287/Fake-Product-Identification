@@ -9,13 +9,11 @@ const readDecodeQR = async (file) => {
     try {
         // Read the image using Jimp
         const imageUpload = await Jimp.read(file);
-        console.log("here")
         // Create a QR code reader instance
         const qr = new Qrcode();
         const decodeQR = await new Promise((resolve, reject) => {
             qr.callback = (err, result) => {
                 if (err) {
-                    console.log("error here")
                     reject(err);
                 } else {
                     resolve(result);
@@ -40,11 +38,11 @@ const readDecodeQR = async (file) => {
 };
 
 const saveHistory = async (productPIN, user, resultVerify) => {
-    const querySaveHistory = `Insert into historyVerify (productPIN, user_id, result_verify) values($1,$2,$3)`
-    const values = [productPIN, user.userId, resultVerify]
+    const dateNow = new Date(Date.now());
+    const querySaveHistory = `Insert into historyVerify (productPIN, user_id, result_verify, date_verify) values($1,$2,$3,$4)`
+    const values = [productPIN, user.userId, resultVerify, dateNow]
     try {
         await client.query(querySaveHistory, values)
-        console.log("save history successfully")
     } catch (error) {
         console.log(error)
     }
@@ -100,7 +98,7 @@ const verifyProduct = async (req, res) => {
             return res.status(StatusCodes.OK).json({ msg: `Verify product success`, resultVerifyProduct: resultVerifyProduct })
         }
         resultVerifyProduct = true
-        //saveHistory(qrDecoded.toString().trim(), user, resultVerifyProduct)
+        saveHistory(qrDecoded.toString().trim(), user, resultVerifyProduct)
         return res.status(StatusCodes.OK).json({ msg: `Verify product success`, resultVerifyProduct: resultVerifyProduct })
 
     } catch (error) {

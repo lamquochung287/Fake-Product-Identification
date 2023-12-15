@@ -2,13 +2,24 @@ import { StyleSheet, Text, View, Button, TouchableOpacity, Image } from 'react-n
 import Color from "../util/Color"
 import { Entypo } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
+import { useDispatch, useSelector } from 'react-redux';
+import { logoutAction, logoutFunction } from '../store/login/loginSlice';
+import { resetStateUser } from '../store/userSlice/userSlice';
 
 
 const Account = ({ navigation }) => {
+    const { userRole } = useSelector((state) => state.login)
+    const dispatch = useDispatch()
+    const logout = () => {
+        dispatch(logoutAction())
+        dispatch(resetStateUser())
+
+        navigation.navigate("Welcome Screen")
+    }
     return (
         <View style={styles.accountContainer}>
             <Image style={styles.image} source={require("../../assets/user.png")}></Image>
-            <Text style={styles.header}>username</Text>
+            <Text style={styles.header}>{userRole}</Text>
             {/* <TouchableOpacity style={styles.buttonContainer} onPress={() => navigation.navigate("List Manufacturer Screen")}>
                 <Entypo name="list" size={24} color="gray" />
                 <Text style={styles.buttonText}>View your manufacturer</Text>
@@ -18,7 +29,7 @@ const Account = ({ navigation }) => {
                 <Text style={styles.buttonText}>View your verify history</Text>
             </TouchableOpacity> */}
             <View style={{ marginTop: 30, width: 100 }}>
-                <Button title="Log out" color={Color.buttonColor} onPress={() => { navigation.navigate("Welcome Screen") }} />
+                <Button title="Log out" color={Color.buttonColor} onPress={logout} />
             </View>
         </View>
     )

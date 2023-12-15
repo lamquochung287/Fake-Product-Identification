@@ -10,12 +10,9 @@ import { verifyProduct } from '../store/userSlice/userSlice';
 
 const DescriptionScreen = () => {
     const dispatch = useDispatch()
-    const { isError, isSuccess, messageError } = useSelector((state) => state.user)
+    const { isError, isSuccess, messageError, resultVerifyProduct } = useSelector((state) => state.user)
     const navigation = useNavigation()
     const [imageSrc, setImage] = useState();
-    const handleVerifyButton = () => {
-        navigation.navigate("Verify Product Screen")
-    }
 
     const [cameraPermissionInformation, requestPermission] = useCameraPermissions()
 
@@ -51,9 +48,15 @@ const DescriptionScreen = () => {
         <View style={style.containerScreen}>
             <Image source={imageSrc ? { uri: imageSrc } : require("../../assets/scanImage.png")} style={style.imageStyle} resizeMode="contain" />
             <View style={{ flex: 1, alignItems: "center", marginTop: 10, gap: 15 }}>
-                <Text style={style.text}>If you want to want to check your product</Text>
-                <Text style={style.text}>Please click button below</Text>
-                <View style={{ width: 150 }}>
+                {resultVerifyProduct !== null ?
+                    <Text style={resultVerifyProduct == true ? [style.text, style.textTrue] : [style.text, style.textFalse]} >Not Fake Product: {resultVerifyProduct.toString()}</Text>
+                    :
+                    <View style={{ alignItems: "center" }}>
+                        <Text style={style.text}>If you want to want to check your product</Text>
+                        <Text style={style.text}>Please click button below</Text>
+                    </View>
+                }
+                <View style={{ width: 150, flex: 1 }}>
                     <Button title="Verify product" color={Color.buttonColor} onPress={takeImage} />
                 </View>
             </View>
@@ -72,6 +75,12 @@ const style = StyleSheet.create({
     },
     text: {
         fontSize: 16
+    },
+    textTrue: {
+        color: "green"
+    },
+    textFalse: {
+        color: "red"
     },
     imageStyle: {
         flex: 1,

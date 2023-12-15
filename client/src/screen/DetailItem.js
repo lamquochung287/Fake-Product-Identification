@@ -1,35 +1,61 @@
-import { View, Text, StyleSheet, Image, Button } from "react-native"
+import { View, Text, StyleSheet, Image, Button, Alert } from "react-native"
 import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from "@react-navigation/native";
+import DeleteConfirmation from '../components/DeleteConfirmation';
+import { useState } from "react";
+import { useDispatch } from 'react-redux';
+import { deleteProduct } from "../store/manufactuer/manufacturerSlice";
+
 
 const DetailItem = ({ route }) => {
     const item = route.params.product;
     const resultVerify = route.params.resultVerify;
     const navigation = useNavigation()
+    const dispatch = useDispatch()
     const editHandle = () => {
         navigation.navigate("Edit Product Screen", { item: item })
+    }
+
+    const [isConfirmationVisible, setConfirmationVisible] = useState(false);
+
+    const handleDeleteClick = () => {
+        setConfirmationVisible(true);
+    };
+
+    const handleCancel = () => {
+        setConfirmationVisible(false);
+    };
+
+    const handleConfirm = () => {
+        setConfirmationVisible(false);
+        handleDelete()
+        navigation.navigate("Your Manufacturer")
+    };
+
+
+    const handleDelete = () => {
+        dispatch(deleteProduct(item.product_id))
     }
     return (
         <View style={style.screenContainer}>
             <View style={style.imageContainer}>
-                <Image style={style.imageStyle} source={{ uri: item.image }} resizeMode="contain"></Image>
+                <Image style={style.imageStyle} source={{ uri: item.productimage }} resizeMode="contain"></Image>
             </View>
             <View style={style.textContainer}>
-                <Text style={style.textHeader}>ID: {item.id}</Text>
-                <Text style={style.text}>{item.name}</Text>
-                <Text style={style.text}>{item.productSN}</Text>
-                <Text style={style.text}>{item.brand}</Text>
-                <Text style={style.text}>{item.price}</Text>
-                {resultVerify !== undefined ?
-                    <View style={[style.boxResult, resultVerify === true ? { borderColor: "green" } : { borderColor: "red" }]}>
-                        <Text style={resultVerify === true ? { color: "green" } : { color: "red" }}>Result Verified: {resultVerify}</Text>
-                    </View>
-                    :
-                    <View style={{ gap: 10 }}>
-                        <Button title="Edit" onPress={editHandle} />
-                        <Button title="Delete" />
-                    </View>
-                }
+                <Text style={style.textHeader}>ID: {item.product_id}</Text>
+                <Text style={style.text}>Product Name:  {item.productname}</Text>
+                <Text style={style.text}>Product PIN:  {item.productpin}</Text>
+                <Text style={style.text}>Product Price:  ${item.price}</Text>
+                <View style={{ gap: 10 }}>
+                    <Button title="Edit" onPress={editHandle} />
+                    <Button title="Delete" onPress={handleDeleteClick} />
+                </View>
+                <DeleteConfirmation
+                    isVisible={isConfirmationVisible}
+                    message="Are you sure you want to delete?"
+                    onCancel={handleCancel}
+                    onConfirm={handleConfirm}
+                />
             </View>
         </View >
     )
